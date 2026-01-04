@@ -1,10 +1,12 @@
-name: creditscoring_ci
-
-conda_env: conda.yaml
+name: creditscoring-mlflow-project
 
 entry_points:
   main:
     parameters:
       data_path: {type: path, default: creditscoring_preprocessing/creditscoring_preprocessed.csv}
-      target_col: {type: string, default: target}
-    command: "python modelling.py --data-path {data_path} --target-col {target_col}"
+      target_col: {type: str, default: target}
+    command: >
+      python modelling.py
+      --data-path {data_path}
+      --target-col {target_col}
+      --use-autolog

@@ -11,13 +11,10 @@ on:
 jobs:
   train:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12.7"
 
@@ -27,14 +24,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run MLflow Project (local env, no conda)
+      - name: Run MLflow Project (local env-manager)
         working-directory: MLProject
+        env:
+          # Set ini sebagai GitHub Secrets (Settings > Secrets and variables > Actions)
+          MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+          MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+          MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
         run: |
           mlflow run . --env-manager=local \
             -P data_path=creditscoring_preprocessing/creditscoring_preprocessed.csv \
             -P target_col=target
 
-      - name: Upload MLflow runs as artifact
+      - name: Upload MLflow runs as artifact (only if local tracking is used)
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: mlruns
