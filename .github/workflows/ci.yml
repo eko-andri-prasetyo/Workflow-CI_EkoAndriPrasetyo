@@ -13,18 +13,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
+      # Clean up any existing miniconda to avoid conflicts
+      - name: Remove pre-installed Miniconda (if any)
+        run: |
+          sudo rm -rf /usr/share/miniconda
+
       - name: Setup Miniconda
         uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
           activate-environment: base
-      
-      # DO NOT install MLflow dependencies with pip, let MLflow handle with conda for reproducibility!
-      # You can install MLflow CLI itself with pip, or conda
+
       - name: Install MLflow CLI
-        run: |
-          pip install mlflow==2.19.0
+        run: pip install mlflow==2.19.0
 
       - name: Run MLflow Project
         working-directory: MLProject
