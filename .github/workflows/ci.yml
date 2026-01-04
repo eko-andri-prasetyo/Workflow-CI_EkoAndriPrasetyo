@@ -88,5 +88,5 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/creditscoring-mlflow:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/creditscoring-mlflow:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci_ekoandriprasetyo:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci_ekoandriprasetyo:${{ github.sha }}
