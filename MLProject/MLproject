@@ -1,13 +1,21 @@
-name: creditscoring-mlflow-project
+name: creditscoring-mlproject
 
 conda_env: conda.yaml
 
 entry_points:
   main:
     parameters:
-      data_path: {type: path, default: creditscoring_preprocessing/creditscoring_preprocessed.csv}
-      target_col: {type: str, default: target}
+      data_path: {type: path}
+      target_col: {type: str, default: "target"}
+      test_size: {type: float, default: 0.2}
+      random_state: {type: int, default: 42}
+      n_estimators: {type: int, default: 300}
+      run_name: {type: str, default: "rf-pipeline-autolog"}
     command: >
       python modelling.py
       --data-path {data_path}
       --target-col {target_col}
+      --test-size {test_size}
+      --random-state {random_state}
+      --n-estimators {n_estimators}
+      --run-name {run_name}
