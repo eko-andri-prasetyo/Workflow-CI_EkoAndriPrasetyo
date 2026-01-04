@@ -24,7 +24,7 @@ jobs:
           miniconda-version: "latest"
           python-version: "3.12"
           auto-activate-base: true
-        channels: conda-forge
+          channels: conda-forge
           channel-priority: strict
           conda-remove-defaults: true
 
