@@ -11,32 +11,43 @@ on:
 jobs:
   train:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      # INI KUNCI: pastikan conda beneran siap dan PATH beres,
+      # supaya "source activate <env>" dari MLflow tidak error.
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: "3.12.7"
+          auto-update-conda: true
+          miniconda-version: "latest"
+          python-version: "3.12"
+          auto-activate-base: true
 
-      - name: Install dependencies
-        working-directory: MLProject
+      - name: Install MLflow (runner env)
+        shell: bash -l {0}
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install mlflow==2.19.0
 
-      - name: Run MLflow Project (local env-manager)
+      - name: Run MLflow Project (conda)
+        shell: bash -l {0}
         working-directory: MLProject
         env:
-          # Set ini sebagai GitHub Secrets (Settings > Secrets and variables > Actions)
+          # Kalau mau logging ke DagsHub, set secrets ini.
+          # Kalau tidak di-set, modelling.py akan fallback ke local ./mlruns
           MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
           MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
           MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+          MLFLOW_EXPERIMENT_NAME: creditscoring-MSML
         run: |
-          mlflow run . --env-manager=local \
+          mlflow run . \
             -P data_path=creditscoring_preprocessing/creditscoring_preprocessed.csv \
             -P target_col=target
 
-      - name: Upload MLflow runs as artifact (only if local tracking is used)
+      - name: Upload local MLflow runs as artifact (if exists)
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:

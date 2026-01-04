@@ -1,5 +1,7 @@
 name: creditscoring-mlflow-project
 
+conda_env: conda.yaml
+
 entry_points:
   main:
     parameters:
@@ -9,4 +11,3 @@ entry_points:
       python modelling.py
       --data-path {data_path}
       --target-col {target_col}
-      --use-autolog
