@@ -3,7 +3,7 @@ name: ci-mlflow-project
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
     paths:
       - "MLProject/**"
       - ".github/workflows/**"
@@ -11,21 +11,28 @@ on:
 jobs:
   train:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12.7"
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install mlflow==2.19.0 pandas==2.2.3 numpy==2.2.1 scikit-learn==1.6.0 matplotlib==3.10.0
-
-      - name: Run MLflow Project
         working-directory: MLProject
         run: |
-          mlflow run . -P data_path=creditscoring_preprocessing/creditscoring_preprocessed.csv -P target_col=target
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run MLflow Project (local env, no conda)
+        working-directory: MLProject
+        run: |
+          mlflow run . --env-manager=local \
+            -P data_path=creditscoring_preprocessing/creditscoring_preprocessed.csv \
+            -P target_col=target
 
       - name: Upload MLflow runs as artifact
         uses: actions/upload-artifact@v4
