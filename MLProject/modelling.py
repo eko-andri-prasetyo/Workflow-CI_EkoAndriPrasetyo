@@ -133,9 +133,13 @@ def main() -> None:
     mlflow.sklearn.autolog(log_models=True)
 
     with mlflow.start_run(run_name=args.run_name):
-        # log params tambahan biar jelas
-        mlflow.log_param("data_path", str(data_path))
-        mlflow.log_param("target_col", args.target_col)
+        # PENTING:
+        # JANGAN log_param dengan key "data_path" dan "target_col",
+        # karena MLflow Projects sudah otomatis log itu dari -P ... (dan nilainya bisa beda format).
+        # Kalau mau simpan path absolut, pakai key lain.
+        mlflow.log_param("data_path_abs", str(data_path.resolve()))
+        mlflow.log_param("target_col_name", args.target_col)
+
         mlflow.log_param("test_size", args.test_size)
         mlflow.log_param("random_state", args.random_state)
         mlflow.log_param("n_estimators", args.n_estimators)
@@ -143,7 +147,6 @@ def main() -> None:
         pipe.fit(X_train, y_train)
         preds = pipe.predict(X_test)
 
-        # metrics eksplisit (biar aman walau autolog gak cover nama ini)
         mlflow.log_metric("test_accuracy", float(accuracy_score(y_test, preds)))
         mlflow.log_metric(
             "test_precision", float(precision_score(y_test, preds, zero_division=0))
@@ -153,7 +156,6 @@ def main() -> None:
         )
         mlflow.log_metric("test_f1", float(f1_score(y_test, preds, zero_division=0)))
 
-        # artifact: confusion matrix
         fig, ax = plt.subplots(figsize=(5, 5))
         ConfusionMatrixDisplay.from_predictions(y_test, preds, ax=ax)
         ax.set_title("Confusion Matrix")
