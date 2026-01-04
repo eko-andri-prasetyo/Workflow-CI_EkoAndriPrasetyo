@@ -32,6 +32,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install mlflow==2.19.0
 
+      - name: Debug - show modelling.py section
+  	working-directory: MLProject
+  	run: |
+    	  echo "=== modelling.py path ==="
+          pwd
+          ls -la
+          echo "=== grep log_param(data_path) ==="
+          grep -n 'log_param("data_path"' -n modelling.py || true
+          echo "=== modelling.py around lines 120-160 ==="
+          nl -ba modelling.py | sed -n '120,170p'
+
+
       - name: Run MLflow Project (conda)
         shell: bash -l {0}
         working-directory: MLProject
